@@ -1,4 +1,6 @@
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -15,9 +17,7 @@ public class AlphaNumSort {
     }
     
     public AlphaNumSort(String[] stringList) {
-        for (int i=0; i < stringList.length; i++) {
-            this.listOfStrings.add(stringList[i]);
-        }
+        this.listOfStrings = new ArrayList<String>(Arrays.asList(stringList));
     }
     
     //Checks if a character is a digit 0-9
