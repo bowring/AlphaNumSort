@@ -17,7 +17,7 @@ public class AlphaNumSort {
     }
     
     public AlphaNumSort(String[] stringList) {
-        this.listOfStrings = new ArrayList<String>(Arrays.asList(stringList));
+        this.listOfStrings = new ArrayList<>(Arrays.asList(stringList));
     }
     
     //Checks if a character is a digit 0-9
@@ -63,78 +63,86 @@ public class AlphaNumSort {
     }
     
     //Compares two strings and returns an integer value based on the
-    //  lexiographic order of the strings (-1 if the first is before the second,
-    //  1 if the second is before the first, and 0 if they're equal)
+    //  lexiographic order of the strings: 
+    //  negative integer if the first is before the second,
+    //  positive integerif the second is before the first,
+    //  and 0 if they're equal.
     public int compare(String string1, String string2){
-        int rtnval = 0;
-        boolean rtnvalFound = false;
+        String numberString1;
+        String numberString2;
         string1 = string1.toLowerCase().trim();
         string2 = string2.toLowerCase().trim();
         
+        int returnValue = 0;
+        int index = 0;
+
+        boolean returnValueFound = false;
+        boolean indexInBounds = (index < string1.length()) && (index < string2.length());
+        
+        //If the strings aren't equal, then find out which one is lexiographically
+        // greater than the other. Otherwise the value of 0 will be returned.
         if (!string1.equals(string2)) {
-            String numberString1;
-            String numberString2;
-            int index = 0;
-         
-            while (index < string1.length() && index < string2.length() && !rtnvalFound) {
-                if(!isDigit(string1.charAt(index)) && !isDigit(string2.charAt(index))) {
-                    if ((int)string1.charAt(index) < (int)string2.charAt(index)) {
-                        rtnval = -1;
-                        rtnvalFound = true;
+            
+            //While we haven't iterated through one of the entire strings and we haven't
+            //  determined the lexiographic order, continue comparing each character of
+            //  the two strings
+            while ((indexInBounds) && (!returnValueFound)) {
+               
+                //If both characters are digits, build two strings of sequential 
+                //  digits in each string, starting at the "index" value,
+                //  and compare the two integers.
+                if(isDigit(string1.charAt(index)) && isDigit(string2.charAt(index))) {
+
+                    numberString1 = getNumberString(string1, index);
+                    numberString2 = getNumberString(string2, index);
+
+                    if (Integer.parseInt(numberString1) < Integer.parseInt(numberString2)) {
+                        returnValue = -1;
+                        returnValueFound = true;
+                    } 
+
+                    else if(Integer.parseInt(numberString1) > Integer.parseInt(numberString2)) {
+                        returnValue = 1;
+                        returnValueFound = true;
+                    }
+
+                    else {
+                        index += numberString2.length();
+                    }
+                }
+                
+                //If one of the two characters is not a digit, check for the equality of 
+                //  the two characters
+                else {
+                    
+                    //If the characters aren't equal, then return the difference 
+                    // of their ASCII values
+                    if(string1.charAt(index) != string2.charAt(index)) {
+                        returnValue = (int)string1.charAt(index) - (int)string2.charAt(index);
+                        returnValueFound = true;
                     }
                     
-                    else if ((int)string1.charAt(index) > (int)string2.charAt(index)) {
-                        rtnval = 1;
-                        rtnvalFound = true;
-                    }
-                    
+                    //If they are equal, continue comparing the rest of the characters
                     else {
                         index += 1;
                     }
-                }
-                
-                else if(isDigit(string1.charAt(index)) && !isDigit(string2.charAt(index))) {
-                    rtnval = -1;
-                    rtnvalFound = true;
-                }
-                
-                else if(!isDigit(string1.charAt(index)) && isDigit(string2.charAt(index))) {
-                    rtnval = 1;
-                    rtnvalFound = true;
-                }
-                
-                else if(isDigit(string1.charAt(index)) && isDigit(string2.charAt(index))) {
-                    
-                    numberString1 = getNumberString(string1, index);
-                    numberString2 = getNumberString(string2, index);
-                    
-                    if (Integer.parseInt(numberString1) < Integer.parseInt(numberString2)) {
-                        rtnval = -1;
-                        rtnvalFound = true;
-                    } 
-                    
-                    else if(Integer.parseInt(numberString1) > Integer.parseInt(numberString2)) {
-                        rtnval = 1;
-                        rtnvalFound = true;
-                    }
-                    
-                    else {
-                        if (numberString1.length() > numberString2.length()) {
-                            index += numberString1.length();
-                        }
                         
-                        else {
-                            index += numberString2.length();
-                        }
-                        
-                    }
-                    
                 }
+                
+                //Check if the index has gone out of bounds
+                indexInBounds = (index < string1.length()) && (index < string2.length());
             }
     
         }
         
-        return rtnval;
+        //If the index has gone out of bounds, then the two strings were equal up
+        //  until that index. Thus, we return the difference of the 
+        //  length of the two strings.
+        if (!indexInBounds) {
+            returnValue = string1.length() - string2.length();
+        }
+        
+        return returnValue;
     }
     
     //sets whether or not the strings will be sorted in ascending or descending order
@@ -146,6 +154,7 @@ public class AlphaNumSort {
     public void sort() {
         String temp;
         
+        //Sorts in ascending order
         if (ascending) {
         
             for(int i=1; i < listOfStrings.size(); i++) {
@@ -161,6 +170,7 @@ public class AlphaNumSort {
     
         }
         
+        //Sorts in descending order
         else {
             int j;
             for(int i=1; i < listOfStrings.size(); i++) {
